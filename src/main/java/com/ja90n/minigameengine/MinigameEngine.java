@@ -1,7 +1,9 @@
 package com.ja90n.minigameengine;
 
 import com.google.inject.Inject;
-import com.ja90n.minigameengine.commands.MainCommand;
+import com.ja90n.minigameengine.commands.JoinCommand;
+import com.ja90n.minigameengine.commands.LeaveCommand;
+import com.ja90n.minigameengine.commands.ListCommand;
 import com.ja90n.minigameengine.commands.PartyCommand;
 import com.ja90n.minigameengine.events.PlayerDisconnect;
 import com.ja90n.minigameengine.managers.ArenaManager;
@@ -53,11 +55,6 @@ public class MinigameEngine {
                 .build();
 
         server.getEventManager().register(this, new PlayerDisconnect(this));
-        commandManager.register("party",new PartyCommand(this));
-        commandManager.register("p",new PartyCommand(this));
-
-        commandManager.register("cmiyc",new MainCommand(this));
-        commandManager.register("catch",new MainCommand(this));
 
         JedisPoolConfig poolCfg = new JedisPoolConfig();
         poolCfg.setMaxTotal(3);
@@ -67,6 +64,13 @@ public class MinigameEngine {
         try (Jedis jedis1 = pool.getResource()) {
             System.out.println(jedis1.get("spigot:gamestate:"));
         }
+
+        commandManager.register("party",new PartyCommand(this));
+        commandManager.register("p",new PartyCommand(this));
+
+        commandManager.register("join",new JoinCommand(this,pool));
+        commandManager.register("leave",new LeaveCommand(this,pool));
+        commandManager.register("list",new ListCommand(this));
 
         receiveVelocityMessageRunnable = new ReceiveVelocityMessageRunnable(this,pool);
     }
