@@ -55,7 +55,7 @@ public class MinigameEngine {
         commandManager.register("party",new PartyCommand(this));
         commandManager.register("p",new PartyCommand(this));
 
-        commandManager.register("join",new JoinCommand(this,pool));
+        //commandManager.register("join",new JoinCommand(this,pool));
         commandManager.register("leave",new LeaveCommand(this,pool));
         commandManager.register("list",new ListCommand(this));
 

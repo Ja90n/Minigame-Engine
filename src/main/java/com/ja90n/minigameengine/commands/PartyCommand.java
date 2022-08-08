@@ -102,37 +102,11 @@ public class PartyCommand implements SimpleCommand {
                         }
                     } else if (invocation.arguments()[0].equalsIgnoreCase("invite")){
                         if (partyManager.getParty(player) != null){
-                            if (!invocation.arguments()[1].equals(player.getUsername())){
-                                boolean foundParty = false;
-                                for (Player target : minigameEngine.getServer().getAllPlayers()){
-                                    if (invocation.arguments()[1].equals(target.getUsername())){
-                                        TextComponent textComponent = Component.text("You have been invited to ",NamedTextColor.BLUE)
-                                                        .append(Component.text(minigameEngine.getServer()
-                                                                                .getPlayer(partyManager.getParty(player)
-                                                                                        .getPartyLeader()).get().getUsername(),NamedTextColor.WHITE)
-                                                                        .append(Component.text("'s"))
-                                                                                .append(Component.text(" party!", NamedTextColor.BLUE)));
-                                        TextComponent textComponent1 = Component.text("Click ",NamedTextColor.BLUE);
-                                        TextComponent textComponent2 = Component.text("HERE",NamedTextColor.WHITE)
-                                                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/p join " + player.getUsername()))
-                                                .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,Component.text("Join the party of ",NamedTextColor.BLUE).append(Component.text(player.getUsername()))));
-                                        TextComponent textComponent3 = Component.text(" to join the party!",NamedTextColor.BLUE);
-                                        TextComponent textComponent4 = textComponent1.append(textComponent2.append(textComponent3));
-                                        target.sendMessage(textComponent);
-                                        target.sendMessage(textComponent4);
-                                        foundParty = true;
-                                        break;
-                                    }
-                                }
-                                if (!foundParty){
-                                    player.sendMessage(Component.text("There is no player online with that name!",NamedTextColor.RED));
-                                }
-                            } else {
-                                player.sendMessage(Component.text("You can't invite yourself!",NamedTextColor.RED));
-                            }
-
+                            inviteToParty(player,invocation);
                         } else {
-                            player.sendMessage(Component.text("You are not in a party!",NamedTextColor.RED));
+                            minigameEngine.getPartyManager().newParty(player);
+                            player.sendMessage(Component.text("Created new party",NamedTextColor.BLUE));
+                            inviteToParty(player,invocation);
                         }
                     } else if (invocation.arguments()[0].equalsIgnoreCase("promote")) {
                         if (partyManager.getParty(player) != null){
@@ -160,6 +134,40 @@ public class PartyCommand implements SimpleCommand {
             }
         } else {
             invocation.source().sendMessage(Component.text("You need to be a player to use this command!",NamedTextColor.RED));
+        }
+    }
+
+    public void inviteToParty(Player player, Invocation invocation){
+        if (!invocation.arguments()[1].equals(player.getUsername())){
+            boolean foundParty = false;
+            for (Player target : minigameEngine.getServer().getAllPlayers()){
+                if (invocation.arguments()[1].equals(target.getUsername())){
+                    TextComponent textComponent = Component.text("You have been invited to ",NamedTextColor.BLUE)
+                            .append(Component.text(minigameEngine.getServer()
+                                            .getPlayer(partyManager.getParty(player)
+                                                    .getPartyLeader()).get().getUsername(),NamedTextColor.WHITE)
+                                    .append(Component.text("'s"))
+                                    .append(Component.text(" party!", NamedTextColor.BLUE)));
+                    TextComponent textComponent1 = Component.text("Click ",NamedTextColor.BLUE);
+                    TextComponent textComponent2 = Component.text("HERE",NamedTextColor.WHITE)
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/p join " + player.getUsername()))
+                            .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,Component.text("Join the party of ",NamedTextColor.BLUE).append(Component.text(player.getUsername()))));
+                    TextComponent textComponent3 = Component.text(" to join the party!",NamedTextColor.BLUE);
+                    TextComponent textComponent4 = textComponent1.append(textComponent2.append(textComponent3));
+                    target.sendMessage(textComponent);
+                    target.sendMessage(textComponent4);
+                    foundParty = true;
+                    player.sendMessage(Component.text("Invite send to ", NamedTextColor.BLUE)
+                            .append(Component.text(target.getUsername(),NamedTextColor.WHITE))
+                            .append(Component.text("!",NamedTextColor.BLUE)));
+                    break;
+                }
+            }
+            if (!foundParty){
+                player.sendMessage(Component.text("There is no player online with that name!",NamedTextColor.RED));
+            }
+        } else {
+            player.sendMessage(Component.text("You can't invite yourself!",NamedTextColor.RED));
         }
     }
 

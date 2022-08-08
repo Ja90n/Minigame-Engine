@@ -36,22 +36,26 @@ public class ReceiveVelocityMessageRunnable {
                                 jedis.set("velocity:removeplayer:" + server.getServerInfo().getName(),"");
                             } if (!jedis.get("velocity:addplayer:" + server.getServerInfo().getName()).equals("")){
                                 String player = jedis.get("velocity:addplayer:" + server.getServerInfo().getName());
-                                if (minigameEngine.getServer().getPlayer(UUID.fromString(player)).isPresent()) {
-                                    Player player1 = minigameEngine.getServer().getPlayer(UUID.fromString(player)).get();
-                                    if (minigameEngine.getPartyManager().getParty(player1) == null){
-                                        minigameEngine.getServer().getPlayer(UUID.fromString(player))
-                                                .get().createConnectionRequest
-                                                        (server).fireAndForget();
-                                        player1.sendMessage(Component.text("You have joined the game!", NamedTextColor.BLUE));
-                                    } else {
-                                        Party party = minigameEngine.getPartyManager().getParty(player1);
-                                        if (party.getPartyLeader().equals(player1.getUniqueId())){
-                                            party.joinGame(server);
+                                if (!jedis.get("spigot:gamestate:" + server.getServerInfo().getName()).equals("LIVE")){
+                                    if (minigameEngine.getServer().getPlayer(UUID.fromString(player)).isPresent()) {
+                                        Player player1 = minigameEngine.getServer().getPlayer(UUID.fromString(player)).get();
+                                        if (minigameEngine.getPartyManager().getParty(player1) == null){
+                                            minigameEngine.getServer().getPlayer(UUID.fromString(player))
+                                                    .get().createConnectionRequest
+                                                            (server).fireAndForget();
+                                            player1.sendMessage(Component.text("You have joined the game!", NamedTextColor.BLUE));
                                         } else {
-                                            player1.sendMessage(Component.text("You can not join this game because you are not the party leader!", NamedTextColor.RED));
+                                            Party party = minigameEngine.getPartyManager().getParty(player1);
+                                            if (party.getPartyLeader().equals(player1.getUniqueId())){
+                                                party.joinGame(server);
+                                            } else {
+                                                player1.sendMessage(Component.text("You can not join this game because you are not the party leader!", NamedTextColor.RED));
+                                            }
                                         }
                                     }
-
+                                } else {
+                                    Player player1 = minigameEngine.getServer().getPlayer(UUID.fromString(player)).get();
+                                    player1.sendMessage(Component.text("The game you tried to join is already active!",NamedTextColor.RED));
                                 }
                                 jedis.set("velocity:addplayer:" + server.getServerInfo().getName(),"");
                             }

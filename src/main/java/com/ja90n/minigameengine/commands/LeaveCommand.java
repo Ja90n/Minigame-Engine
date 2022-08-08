@@ -29,33 +29,17 @@ public class LeaveCommand implements SimpleCommand {
             Player player = (Player) invocation.source();
             if (minigameEngine.getArenaManager().getArena(player) != null){
                 if (minigameEngine.getPartyManager().getParty(player) == null){
-                    try (redis.clients.jedis.Jedis jedis = pool.getResource()) {
-                        if (jedis.get("spigot:removeplayer:" + minigameEngine.getArenaManager().getArena(player).getServerInfo().getName()).equals("")){
-                            jedis.set("spigot:removeplayer:" + minigameEngine.getArenaManager().getArena(player).getServerInfo().getName(),player.getUniqueId().toString());
-                            player.sendMessage(Component.text("You have left the game!", NamedTextColor.RED));
-                        } else {
-                            TextComponent textComponent = Component.text("You have left the game!",NamedTextColor.RED);
-                            new SendSpigotMessageRunnable(minigameEngine,
-                                    "spigot:removeplayer:" + minigameEngine.getArenaManager()
-                                            .getArena(player).getServerInfo().getName()
-                                    ,player.getUniqueId().toString(),jedis,player,textComponent);
-                        }
+                    if (minigameEngine.getServer().getServer("lobby").isPresent()){
+                        player.sendMessage(Component.text("You have left the game!",NamedTextColor.BLUE));
+                        player.createConnectionRequest(minigameEngine.getServer().getServer("lobby").get()).fireAndForget();
                     }
                 } else {
                     if (minigameEngine.getPartyManager().getParty(player).getPartyLeader().equals(player.getUniqueId())){
                         minigameEngine.getPartyManager().getParty(player).leaveGame(minigameEngine.getArenaManager().getArena(player));
                     } else {
-                        try (redis.clients.jedis.Jedis jedis = pool.getResource()) {
-                            if (jedis.get("spigot:removeplayer:" + minigameEngine.getArenaManager().getArena(player).getServerInfo().getName()).equals("")){
-                                jedis.set("spigot:removeplayer:" + minigameEngine.getArenaManager().getArena(player).getServerInfo().getName(),player.getUniqueId().toString());
-                                player.sendMessage(Component.text("You have left the game without your party!",NamedTextColor.RED));
-                            } else {
-                                TextComponent textComponent = Component.text("You have left the game without your party!",NamedTextColor.RED);
-                                new SendSpigotMessageRunnable(minigameEngine,
-                                        "spigot:removeplayer:" + minigameEngine.getArenaManager()
-                                                .getArena(player).getServerInfo().getName()
-                                        ,player.getUniqueId().toString(),jedis,player,textComponent);
-                            }
+                        if (minigameEngine.getServer().getServer("lobby").isPresent()){
+                            player.sendMessage(Component.text("You have left the game without your party!",NamedTextColor.BLUE));
+                            player.createConnectionRequest(minigameEngine.getServer().getServer("lobby").get()).fireAndForget();
                         }
                     }
                 }
