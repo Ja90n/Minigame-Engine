@@ -30,7 +30,6 @@ public class MinigameEngine {
     private CommandManager commandManager;
     private PartyManager partyManager;
     private ArenaManager arenaManager;
-    private JedisPool pool;
     private ReceiveVelocityMessageRunnable receiveVelocityMessageRunnable;
 
     @Inject
@@ -45,21 +44,20 @@ public class MinigameEngine {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+
         server.getEventManager().register(this, new PlayerDisconnect(this));
-
-        JedisPoolConfig poolCfg = new JedisPoolConfig();
-        poolCfg.setMaxTotal(3);
-
-        pool = new JedisPool(poolCfg, "192.168.178.16", 6379, 500);
 
         commandManager.register("party",new PartyCommand(this));
         commandManager.register("p",new PartyCommand(this));
 
-        //commandManager.register("join",new JoinCommand(this,pool));
-        commandManager.register("leave",new LeaveCommand(this,pool));
+        commandManager.register("leave",new LeaveCommand(this));
         commandManager.register("list",new ListCommand(this));
 
-        receiveVelocityMessageRunnable = new ReceiveVelocityMessageRunnable(this,pool);
+        // receiveVelocityMessageRunnable = new ReceiveVelocityMessageRunnable(this,pool);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     public ProxyServer getServer() {
