@@ -15,8 +15,6 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 @Plugin(
         id = "minigame-engine",
@@ -50,7 +48,6 @@ public class MinigameEngine {
         commandManager.register("party",new PartyCommand(this));
         commandManager.register("p",new PartyCommand(this));
 
-        commandManager.register("leave",new LeaveCommand(this));
         commandManager.register("list",new ListCommand(this));
 
         // receiveVelocityMessageRunnable = new ReceiveVelocityMessageRunnable(this,pool);

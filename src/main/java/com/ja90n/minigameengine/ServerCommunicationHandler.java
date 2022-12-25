@@ -1,42 +1,84 @@
 package com.ja90n.minigameengine;
 
+import com.ja90n.minigameengine.enums.MessageType;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 public class ServerCommunicationHandler {
 
     private final ScheduledTask scheduledTask;
     private final int PORT = 9090;
     private ArrayList<Client> clients;
+    private final MinigameEngine minigameEngine;
+    private Collection<RegisteredServer> availableServers;
 
     public ServerCommunicationHandler(MinigameEngine minigameEngine) {
+        this.minigameEngine = minigameEngine;
+
+        availableServers = minigameEngine.getServer().getAllServers();
+
         scheduledTask = minigameEngine.getServer().getScheduler().buildTask(minigameEngine, () -> {
-
             clients = new ArrayList<>();
-
             try {
                 ServerSocket listener = new ServerSocket(PORT);
-                while (true){
 
+                while (true){
                     Socket clientSocket = listener.accept();
                     Client client = new Client(clientSocket,minigameEngine,this);
                     clients.add(client);
 
-                    minigameEngine.getLogger().info("Found a client!");
-
+                    minigameEngine.getLogger().info("Added a client!");
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                minigameEngine.getLogger().error("huh");
             }
-
         }).schedule();
     }
 
-    public void incomingMessage(String message){
+    /*
+    To receive a message from a client I use this layout:
+    from server : to server : command : (args)
 
+    for example:
+    lobby:proxy:sendPlayer:(Player UUID):destinationServer
+     */
+
+    public void incomingMessage(String message, Client client){
+        String[] args = message.split(":");
+
+        if (!args[1].equals("proxy")) { return; }
+
+        MessageType type = null;
+        for (MessageType messageType : MessageType.values()){
+            if (messageType.getMessage().equals(args[2])){
+                type = messageType;
+                break;
+            }
+        }
+        if (type == null){ return; }
+
+        switch (type){
+            case SEND_PLAYER:
+                Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
+                if (!optionalPlayer.isPresent()){ return; }
+                Player player = optionalPlayer.get();
+                player.createConnectionRequest(client.getRegisteredServer()).fireAndForget();
+                break;
+            case KICK_PLAYER:
+                Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
+                if (!optionalPlayer.isPresent()){ return; }
+        }
+    }
+
+    public Collection<RegisteredServer> getAvailableServers() {
+        return availableServers;
     }
 }
