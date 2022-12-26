@@ -1,5 +1,6 @@
 package com.ja90n.minigameengine;
 
+import com.ja90n.minigameengine.enums.MessageType;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 
 import java.io.BufferedReader;
@@ -82,6 +83,16 @@ public class Client {
     private void sendMessage(String message){
         out.println(message);
     }
+
+    public void sendGameStateRequest(){
+        out.println("proxy:" + name + MessageType.GAMESTATE.getMessage());
+    }
+
+    public void sendPlayerCountRequest(){
+        out.println("proxy:" + name + MessageType.PLAYERCOUNT.getMessage());
+    }
+
+
 
     public String getName() {
         return name;

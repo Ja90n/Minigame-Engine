@@ -65,16 +65,22 @@ public class ServerCommunicationHandler {
         }
         if (type == null){ return; }
 
-        switch (type){
-            case SEND_PLAYER:
-                Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
-                if (!optionalPlayer.isPresent()){ return; }
-                Player player = optionalPlayer.get();
-                player.createConnectionRequest(client.getRegisteredServer()).fireAndForget();
-                break;
-            case KICK_PLAYER:
-                Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
-                if (!optionalPlayer.isPresent()){ return; }
+        if (type.equals(MessageType.SEND_PLAYER)){
+            Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
+            if (!optionalPlayer.isPresent()){ return; }
+            Player player = optionalPlayer.get();
+            player.createConnectionRequest(client.getRegisteredServer()).fireAndForget();
+            return;
+        }
+
+        if (type.equals(MessageType.KICK_PLAYER)){
+            Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
+            if (!optionalPlayer.isPresent()){ return; }
+            Player player = optionalPlayer.get();
+            if (!minigameEngine.getServer().getServer("lobby").isPresent()){ return; }
+            RegisteredServer registeredServer = minigameEngine.getServer().getServer("lobby").get();
+            player.createConnectionRequest(registeredServer).fireAndForget();
+            return;
         }
     }
 
