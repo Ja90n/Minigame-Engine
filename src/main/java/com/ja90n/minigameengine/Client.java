@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class Client {
 
@@ -27,15 +28,21 @@ public class Client {
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(clientSocket.getOutputStream(),true);
 
+        minigameEngine.getLogger().info("Found a client!");
+        minigameEngine.getLogger().info("Trying to connect!");
+
         initialConnect();
     }
 
     public void initialConnect() {
         minigameEngine.getServer().getScheduler().buildTask(minigameEngine, () -> {
+            System.out.println("huh");
             while (true){
                 try {
                     String request = in.readLine();
                     String[] args = request.split(":");
+
+                    System.out.println(request);
 
                     if (!args[1].equals("proxy")) { return; }
                     if (!args[2].equals("initialConnect")){ return; }
@@ -56,9 +63,11 @@ public class Client {
 
                     run();
                     break;
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                    System.out.println("error ig");
+                }
             }
-        });
+        }).schedule();
     }
 
     public void run(){
@@ -67,11 +76,14 @@ public class Client {
                 try {
                     String request = in.readLine();
                     serverCommunicationHandler.incomingMessage(request, this);
-                } catch (IOException e) {
+                } catch (IOException ignored) {
+                    ignored.printStackTrace();
                     minigameEngine.getLogger().error("Server " + name + " has disconnected");
                     break;
-                } finally {
+                }
+                finally {
                     try {
+                        minigameEngine.getLogger().error("Server " + name + " has disconnected");
                         clientSocket.close();
                         in.close();
                     } catch (IOException ignored) {}

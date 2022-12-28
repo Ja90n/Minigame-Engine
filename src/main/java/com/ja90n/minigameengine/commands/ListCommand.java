@@ -1,3 +1,4 @@
+/*
 package com.ja90n.minigameengine.commands;
 
 import com.ja90n.minigameengine.MinigameEngine;
@@ -61,3 +62,5 @@ public class ListCommand implements SimpleCommand {
         return SimpleCommand.super.hasPermission(invocation);
     }
 }
+
+ */

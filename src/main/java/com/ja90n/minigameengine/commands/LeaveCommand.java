@@ -1,3 +1,4 @@
+/*
 package com.ja90n.minigameengine.commands;
 
 import com.ja90n.minigameengine.MinigameEngine;
@@ -64,3 +65,5 @@ public class LeaveCommand implements SimpleCommand {
         return SimpleCommand.super.hasPermission(invocation);
     }
 }
+
+ */

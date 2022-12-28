@@ -1,3 +1,4 @@
+/*
 package com.ja90n.minigameengine.commands;
 
 import com.ja90n.minigameengine.MinigameEngine;
@@ -82,3 +83,5 @@ public class JoinCommand implements SimpleCommand {
         return SimpleCommand.super.hasPermission(invocation);
     }
 }
+
+ */

@@ -25,17 +25,17 @@ public class ServerCommunicationHandler {
 
         availableServers = minigameEngine.getServer().getAllServers();
 
+        minigameEngine.getLogger().info("Started looking for clients");
+
         scheduledTask = minigameEngine.getServer().getScheduler().buildTask(minigameEngine, () -> {
             clients = new ArrayList<>();
             try {
                 ServerSocket listener = new ServerSocket(PORT);
-
                 while (true){
                     Socket clientSocket = listener.accept();
                     Client client = new Client(clientSocket,minigameEngine,this);
                     clients.add(client);
 
-                    minigameEngine.getLogger().info("Added a client!");
                 }
             } catch (IOException e) {
                 minigameEngine.getLogger().error("huh");
@@ -54,6 +54,8 @@ public class ServerCommunicationHandler {
     public void incomingMessage(String message, Client client){
         String[] args = message.split(":");
 
+        System.out.println(args);
+
         if (!args[1].equals("proxy")) { return; }
 
         MessageType type = null;
@@ -69,7 +71,9 @@ public class ServerCommunicationHandler {
             Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
             if (!optionalPlayer.isPresent()){ return; }
             Player player = optionalPlayer.get();
-            player.createConnectionRequest(client.getRegisteredServer()).fireAndForget();
+            RegisteredServer registeredServer = getServer(args[4]);
+            if (registeredServer == null) return;
+            player.createConnectionRequest(registeredServer).fireAndForget();
             return;
         }
 
@@ -86,5 +90,14 @@ public class ServerCommunicationHandler {
 
     public Collection<RegisteredServer> getAvailableServers() {
         return availableServers;
+    }
+
+    public RegisteredServer getServer(String name){
+        for (RegisteredServer registeredServer : minigameEngine.getServer().getAllServers()){
+            if (registeredServer.getServerInfo().getName().equals(name)){
+                return registeredServer;
+            }
+        }
+        return null;
     }
 }

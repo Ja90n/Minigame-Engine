@@ -1,3 +1,4 @@
+/*
 package com.ja90n.minigameengine.commands;
 
 import com.ja90n.minigameengine.MinigameEngine;
@@ -182,8 +183,9 @@ public class PartyCommand implements SimpleCommand {
         player.sendMessage(ChatColor.BLUE + "/party disband: " + ChatColor.WHITE + "Makes you disband your party");
         player.sendMessage(ChatColor.WHITE + "-----------------" + ChatColor.LIGHT_PURPLE + "=+=" + ChatColor.WHITE + "-----------------");
 
-         */
+
     }
+
 
     @Override
     public List<String> suggest(Invocation invocation) {
@@ -232,3 +234,4 @@ public class PartyCommand implements SimpleCommand {
         return SimpleCommand.super.hasPermission(invocation);
     }
 }
+*/

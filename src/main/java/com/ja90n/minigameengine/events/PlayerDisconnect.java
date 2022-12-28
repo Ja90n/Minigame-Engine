@@ -1,3 +1,4 @@
+/*
 package com.ja90n.minigameengine.events;
 
 import com.ja90n.minigameengine.MinigameEngine;
@@ -20,3 +21,5 @@ public class PlayerDisconnect {
         }
     }
 }
+
+ */
