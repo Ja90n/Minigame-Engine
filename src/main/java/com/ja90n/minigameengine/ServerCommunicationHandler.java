@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ServerCommunicationHandler {
 
@@ -51,10 +52,10 @@ public class ServerCommunicationHandler {
     lobby:proxy:sendPlayer:(Player UUID):destinationServer
      */
 
-    public void incomingMessage(String message, Client client){
-        String[] args = message.split(":");
+    public void incomingMessage(String message){
 
-        System.out.println(args);
+
+        String[] args = message.split(":");
 
         if (!args[1].equals("proxy")) { return; }
 
@@ -65,10 +66,11 @@ public class ServerCommunicationHandler {
                 break;
             }
         }
+
         if (type == null){ return; }
 
         if (type.equals(MessageType.SEND_PLAYER)){
-            Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(args[3]);
+            Optional<Player> optionalPlayer = minigameEngine.getServer().getPlayer(UUID.fromString(args[3]));
             if (!optionalPlayer.isPresent()){ return; }
             Player player = optionalPlayer.get();
             RegisteredServer registeredServer = getServer(args[4]);

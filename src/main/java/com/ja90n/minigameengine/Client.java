@@ -53,7 +53,6 @@ public class Client {
                         if (serverName.equals(target.getServerInfo().getName())){
                             name = serverName;
                             registeredServer = target;
-                            break;
                         }
                     }
                     if (registeredServer == null) { return; }
@@ -75,19 +74,8 @@ public class Client {
             while (true) {
                 try {
                     String request = in.readLine();
-                    serverCommunicationHandler.incomingMessage(request, this);
-                } catch (IOException ignored) {
-                    ignored.printStackTrace();
-                    minigameEngine.getLogger().error("Server " + name + " has disconnected");
-                    break;
-                }
-                finally {
-                    try {
-                        minigameEngine.getLogger().error("Server " + name + " has disconnected");
-                        clientSocket.close();
-                        in.close();
-                    } catch (IOException ignored) {}
-                }
+                    serverCommunicationHandler.incomingMessage(request);
+                } catch (IOException ignored) { }
             }
         }).schedule();
     }
