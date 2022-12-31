@@ -1,5 +1,7 @@
-package com.ja90n.minigameengine;
+package com.ja90n.minigameengine.instances;
 
+import com.ja90n.minigameengine.MinigameEngine;
+import com.ja90n.minigameengine.ServerCommunicationHandler;
 import com.ja90n.minigameengine.enums.MessageType;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 

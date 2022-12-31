@@ -5,10 +5,11 @@ import com.ja90n.minigameengine.instances.Party;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +17,9 @@ import java.util.UUID;
 
 public class PartyManager {
 
-    private MinigameEngine minigameEngine;
-    private List<Party> parties;
-    private List<UUID> players;
+    private final MinigameEngine minigameEngine;
+    private final List<Party> parties;
+    private final List<UUID> players;
 
     public PartyManager(MinigameEngine minigameEngine){
         this.minigameEngine = minigameEngine;
@@ -51,6 +52,21 @@ public class PartyManager {
             TextComponent textComponent = Component.text("You are already in a party",NamedTextColor.RED);
             player.sendMessage(textComponent);
         }
+    }
+
+    public void invitePlayer(Player sender, Player receiver){
+        TextComponent message = Component.text(sender.getUsername(), NamedTextColor.WHITE)
+                .append(Component.text(" has invited you to their party!", NamedTextColor.BLUE));
+
+        TextComponent clickable = Component.text("Click here to join their party!",NamedTextColor.LIGHT_PURPLE)
+                .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/p join " + sender.getUsername()))
+                .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        Component.text("Join the party of ",NamedTextColor.BLUE)
+                        .append(Component.text(sender.getUsername()))));
+
+        TextComponent finalMessage = message.append(clickable);
+
+        receiver.sendMessage(finalMessage);
     }
 
     public void removePlayer(Player player){
@@ -86,7 +102,6 @@ public class PartyManager {
                 minigameEngine.getServer().getPlayer(uuid).get().sendMessage(Component.text("Party was disbanded",NamedTextColor.RED));
                 list.add(uuid);
             }
-
         }
         for (UUID uuid : list){
             removePlayer(minigameEngine.getServer().getPlayer(uuid).get());
@@ -116,9 +131,8 @@ public class PartyManager {
             for (UUID uuid : party.getPlayers()){
                 if (!uuid.equals(party.getPartyLeader())){
                     if (minigameEngine.getServer().getPlayer(uuid).isPresent()){
-
+                        player.sendMessage(Component.text("- ",NamedTextColor.BLUE).append(Component.text(minigameEngine.getServer().getPlayer(uuid).get().getUsername(),NamedTextColor.WHITE)));
                     }
-                    player.sendMessage(Component.text("- ",NamedTextColor.BLUE).append(Component.text(minigameEngine.getServer().getPlayer(uuid).get().getUsername(),NamedTextColor.WHITE)));
                 }
             }
         } else {
@@ -140,6 +154,22 @@ public class PartyManager {
         for (Party party : parties){
             if (party.getPlayers().contains(player.getUniqueId())){
                 return party;
+            }
+        }
+        return null;
+    }
+
+    public Party getParty(String name){
+        Optional<Player> optionalTarget = minigameEngine.getServer().getPlayer(name);
+        if (optionalTarget.isEmpty()){
+            return null;
+        }
+        UUID targetUUID = optionalTarget.get().getUniqueId();
+        for (Party party : parties){
+            for (UUID playerUUID : party.getPlayers()){
+                if (playerUUID == targetUUID){
+                    return party;
+                }
             }
         }
         return null;

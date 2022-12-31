@@ -13,16 +13,17 @@ import java.util.UUID;
 
 public class Party {
     private UUID partyLeader;
-    private PartyManager partyManager;
-    private MinigameEngine minigameEngine;
-
-    private List<UUID> players;
+    private final PartyManager partyManager;
+    private final MinigameEngine minigameEngine;
+    private final ArrayList<UUID> players;
+    private final ArrayList<UUID> invitedPlayers;
 
     public Party(Player leader, PartyManager partyManager, MinigameEngine minigameEngine){
         this.partyManager = partyManager;
         this.minigameEngine = minigameEngine;
         partyLeader = leader.getUniqueId();
         players = new ArrayList<>();
+        invitedPlayers = new ArrayList<>();
         players.add(leader.getUniqueId());
     }
 
@@ -37,18 +38,19 @@ public class Party {
     }
 
     public void leaveGame(RegisteredServer server){
+        if (!minigameEngine.getServer().getServer("lobby").isPresent()) return;
         for (UUID uuid : players){
             if (minigameEngine.getServer().getPlayer(uuid).isPresent()){
                 Player player = (minigameEngine.getServer().getPlayer(uuid).get());
-                if (minigameEngine.getServer().getServer("lobby").isPresent()){
-                    player.createConnectionRequest(minigameEngine.getServer().getServer("lobby").get()).fireAndForget();
-                }
+                player.createConnectionRequest(minigameEngine.getServer().getServer("lobby").get()).fireAndForget();
+                player.sendMessage(Component.text("The party leader has left the game!", NamedTextColor.BLUE));
             }
         }
     }
 
     public void addPlayer(Player player){
         players.add(player.getUniqueId());
+        invitedPlayers.remove(player.getUniqueId());
     }
 
     public void removePlayer(Player player){
@@ -61,6 +63,10 @@ public class Party {
 
     public UUID getPartyLeader() {
         return partyLeader;
+    }
+
+    public ArrayList<UUID> getInvitedPlayers() {
+        return invitedPlayers;
     }
 
     public void setPartyLeader(UUID partyLeader) {

@@ -1,6 +1,7 @@
 package com.ja90n.minigameengine;
 
 import com.ja90n.minigameengine.enums.MessageType;
+import com.ja90n.minigameengine.instances.Client;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.scheduler.ScheduledTask;

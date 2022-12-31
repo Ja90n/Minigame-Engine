@@ -2,6 +2,7 @@ package com.ja90n.minigameengine;
 
 import com.google.inject.Inject;
 import com.ja90n.minigameengine.commands.LobbyCommand;
+import com.ja90n.minigameengine.managers.PartyManager;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
@@ -22,6 +23,7 @@ public class MinigameEngine {
     private final ProxyServer server;
     private final Logger logger;
     private ServerCommunicationHandler serverCommunicationHandler;
+    private final PartyManager partyManager;
     private CommandManager commandManager;
 
     @Inject
@@ -29,6 +31,7 @@ public class MinigameEngine {
         this.server = server;
         this.logger = logger;
         commandManager = getServer().getCommandManager();
+        partyManager = new PartyManager(this);
     }
 
     @Subscribe
@@ -50,4 +53,7 @@ public class MinigameEngine {
         return server;
     }
 
+    public PartyManager getPartyManager() {
+        return partyManager;
+    }
 }
