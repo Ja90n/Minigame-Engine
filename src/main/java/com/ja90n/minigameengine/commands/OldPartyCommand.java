@@ -1,4 +1,4 @@
-
+/*
 package com.ja90n.minigameengine.commands;
 
 import com.ja90n.minigameengine.MinigameEngine;

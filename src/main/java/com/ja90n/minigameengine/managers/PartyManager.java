@@ -54,9 +54,10 @@ public class PartyManager {
         }
     }
 
-    public void invitePlayer(Player sender, Player receiver){
+    public void invitePlayer(Player sender, Player receiver, Party party){
+        party.invitePlayer(receiver);
         TextComponent message = Component.text(sender.getUsername(), NamedTextColor.WHITE)
-                .append(Component.text(" has invited you to their party!", NamedTextColor.BLUE));
+                .append(Component.text(" has invited you to their party! ", NamedTextColor.BLUE));
 
         TextComponent clickable = Component.text("Click here to join their party!",NamedTextColor.LIGHT_PURPLE)
                 .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,"/p join " + sender.getUsername()))
@@ -90,7 +91,7 @@ public class PartyManager {
 
     public void changeLeader(Player player, Party party){
         party.setPartyLeader(player.getUniqueId());
-        TextComponent textComponent = Component.text(String.valueOf(minigameEngine.getServer().getPlayer(party.getPlayers().get(0))), NamedTextColor.WHITE)
+        TextComponent textComponent = Component.text(player.getUsername(), NamedTextColor.WHITE)
                 .append(Component.text(" has been promoted to party leader!",NamedTextColor.BLUE));
         sendMessage(party,textComponent);
     }

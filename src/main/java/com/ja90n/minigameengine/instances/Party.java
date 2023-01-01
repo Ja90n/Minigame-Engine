@@ -57,6 +57,10 @@ public class Party {
         players.remove(player.getUniqueId());
     }
 
+    public void invitePlayer(Player player){
+        invitedPlayers.add(player.getUniqueId());
+    }
+
     public List<UUID> getPlayers() {
         return players;
     }

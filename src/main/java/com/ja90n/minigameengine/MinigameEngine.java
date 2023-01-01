@@ -2,6 +2,7 @@ package com.ja90n.minigameengine;
 
 import com.google.inject.Inject;
 import com.ja90n.minigameengine.commands.LobbyCommand;
+import com.ja90n.minigameengine.commands.PartyCommand;
 import com.ja90n.minigameengine.managers.PartyManager;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -42,6 +43,8 @@ public class MinigameEngine {
         commandManager.register("hub",new LobbyCommand(this));
         commandManager.register("l",new LobbyCommand(this));
         commandManager.register("h",new LobbyCommand(this));
+        commandManager.register("p",new PartyCommand(this));
+        commandManager.register("party",new PartyCommand(this));
         logger.info("Thank you for using my system! - Ja90n");
     }
 
