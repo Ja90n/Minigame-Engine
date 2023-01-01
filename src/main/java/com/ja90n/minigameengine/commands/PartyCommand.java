@@ -91,6 +91,7 @@ public class PartyCommand implements SimpleCommand {
         List<String> list = new ArrayList<>();
         if (invocation.source() instanceof Player){
             switch (invocation.arguments().length){
+                case 0:
                 case 1:
                     list.add("join");
                     list.add("leave");
@@ -123,11 +124,11 @@ public class PartyCommand implements SimpleCommand {
         if (player.getCurrentServer().isEmpty()) return;
         RegisteredServer registeredServer = player.getCurrentServer().get().getServer();
         for (UUID targetUUID : party.getPlayers()){
-            if (targetUUID.equals(player.getUniqueId())) return;
+            if (targetUUID.equals(player.getUniqueId())) continue;
             Optional<Player> playerOptional = minigameEngine.getServer().getPlayer(targetUUID);
-            if (playerOptional.isEmpty()) return;
+            if (playerOptional.isEmpty()) continue;
             Player target = playerOptional.get();
-            if (!target.getCurrentServer().get().getServer().equals(registeredServer)) return;
+            if (target.getCurrentServer().get().getServer().equals(registeredServer)) continue;
             target.createConnectionRequest(registeredServer).fireAndForget();
             target.sendMessage(Component.text("You have been warped by the leader!", NamedTextColor.BLUE));
         }
@@ -184,13 +185,8 @@ public class PartyCommand implements SimpleCommand {
     }
 
     public void invitePlayer(Player player, String targetName){
-        Party party = partyManager.getParty(player);
         if (player.getUsername().equals(targetName)){
             player.sendMessage(Component.text("You can't invite yourself!",NamedTextColor.RED));
-            return;
-        }
-        if (party == null){
-            player.sendMessage(Component.text("You are not in a party!",NamedTextColor.RED));
             return;
         }
         Player target = null;
@@ -207,7 +203,12 @@ public class PartyCommand implements SimpleCommand {
             player.sendMessage(textComponent);
             return;
         }
-        partyManager.invitePlayer(player,target,party);
+        Party party = partyManager.getParty(player);
+        if (party == null){
+            createParty(player);
+            return;
+        }
+        partyManager.invitePlayer(player,target,partyManager.getParty(player));
         player.sendMessage(Component.text("You have send an invite to ",NamedTextColor.BLUE)
                 .append(Component.text(targetName,NamedTextColor.WHITE))
                 .append(Component.text("!",NamedTextColor.BLUE)));
